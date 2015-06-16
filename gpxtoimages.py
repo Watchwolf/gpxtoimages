@@ -399,7 +399,7 @@ for item in datas:
     build_elevation(item, ctx)
 
     ctx.stroke()
-    surface.write_to_png ('%s/%5d.png' % (args.outputfolder, i))
+    surface.write_to_png ('%s/%05d.png' % (args.outputfolder, i))
 
     i += 1
 
