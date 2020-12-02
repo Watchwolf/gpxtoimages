@@ -6,6 +6,8 @@ import argparse
 import cairo
 import math
 
+import cv2
+
 gpxfile = None
 output = None
 
@@ -24,7 +26,7 @@ p = subprocess.Popen(['gpsbabel', '-t', '-i', 'gpx', '-f', args.gpxfile, '-o', '
     stdout=subprocess.PIPE, 
     stderr=subprocess.PIPE)
 out, err = p.communicate()
-out = out.split('\n')
+out = out.decode().split('\n')
 out = out[1:] ##la première ligne est l'entête (No,Latitude,Longitude,Altitude,Speed,Course,Date,Time)
 
 
@@ -158,6 +160,8 @@ for item in datas:
 
 WIDTH = 800
 HEIGHT = 260
+frameSize = (800, 260)
+
 
 def calc_distance(lat1, lon1, lat2, lon2):
     """
@@ -384,10 +388,11 @@ average_speed = track_length / total_time.total_seconds() * 60 * 60
 ###
 
 
-##supressions du dossier images
+##creation du dossier images
 os.system('mkdir -p %s' % args.outputfolder)
 ##
 
+out = cv2.VideoWriter('%s/video.avi' % args.outputfolder, cv2.VideoWriter_fourcc(*'DIVX'), 1, frameSize)
 i = 0
 for item in datas:
     surface = cairo.ImageSurface (cairo.FORMAT_ARGB32, WIDTH, HEIGHT)
@@ -401,5 +406,10 @@ for item in datas:
     ctx.stroke()
     surface.write_to_png ('%s/%05d.png' % (args.outputfolder, i))
 
+    img = cv2.imread('%s/%05d.png' % (args.outputfolder, i))
+    out.write(img)
+
     i += 1
+
+out.release()
 
