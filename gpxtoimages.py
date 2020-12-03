@@ -6,8 +6,6 @@ import argparse
 import cairo
 import math
 
-import cv2
-
 gpxfile = None
 output = None
 
@@ -392,15 +390,14 @@ average_speed = track_length / total_time.total_seconds() * 60 * 60
 os.system('mkdir -p %s' % args.outputfolder)
 ##
 
-out = cv2.VideoWriter('%s/video.avi' % args.outputfolder, cv2.VideoWriter_fourcc(*'DIVX'), 1, frameSize)
 i = 0
 for item in datas:
     surface = cairo.ImageSurface (cairo.FORMAT_ARGB32, WIDTH, HEIGHT)
     ctx = cairo.Context (surface)
 
-    ctx.rectangle(0, 0, WIDTH, HEIGHT)
-    ctx.set_source_rgb(0, 255, 68)
-    ctx.fill()
+    #ctx.rectangle(0, 0, WIDTH, HEIGHT)
+    #ctx.set_source_rgb(0, 255, 68)
+    #ctx.fill()
 
     build_speed(item, ctx)
     build_track(item, ctx)
@@ -410,10 +407,11 @@ for item in datas:
     ctx.stroke()
     surface.write_to_png ('%s/%05d.png' % (args.outputfolder, i))
 
-    img = cv2.imread('%s/%05d.png' % (args.outputfolder, i))
-    out.write(img)
-
     i += 1
 
-out.release()
 
+##Create video
+cmd = 'ffmpeg -r 1 -i %s/%%5d.png -y -y -vcodec png %s/video.mov' % (args.outputfolder, args.outputfolder)
+print('Create video %s' % cmd)
+os.system(cmd)
+print('Video finished')
