@@ -398,6 +398,10 @@ for item in datas:
     surface = cairo.ImageSurface (cairo.FORMAT_ARGB32, WIDTH, HEIGHT)
     ctx = cairo.Context (surface)
 
+    ctx.rectangle(0, 0, WIDTH, HEIGHT)
+    ctx.set_source_rgb(0, 255, 68)
+    ctx.fill()
+
     build_speed(item, ctx)
     build_track(item, ctx)
     build_info(item, ctx)
